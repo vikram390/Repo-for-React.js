@@ -3,11 +3,26 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      docker: 19
+      nodejs: 14
   pre_build:
     commands:
-      - $(aws ecr get-login --no-include-email --region us-east-1)
+      - npm install
   build:
     commands:
-      - docker build -t public.ecr.aws/j7z6d3z4/my-react-app:latest .
+      - npm run build
+      - echo Build completed on `date`
+  post_build:
+    commands:
+      - echo Build completed successfully
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - echo Tagging Docker image...
+      - docker tag my-react-app:latest public.ecr.aws/j7z6d3z4/my-react-app:latest
+      - echo Pushing Docker image to Amazon ECR...
       - docker push public.ecr.aws/j7z6d3z4/my-react-app:latest
+      - echo Docker image pushed successfully
+
+artifacts:
+  files:
+    - '**/*'
