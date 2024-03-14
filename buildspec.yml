@@ -14,7 +14,7 @@ phases:
     commands:
       - echo Build completed successfully
       - echo Logging in to Amazon ECR...
-      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/j7z6d3z4
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 058264538542.dkr.ecr.us-east-1.amazonaws.com
       - docker build -t my-react-app .
       - docker tag my-react-app:latest public.ecr.aws/j7z6d3z4/my-react-app:latest
       - docker push public.ecr.aws/j7z6d3z4/my-react-app:latest
