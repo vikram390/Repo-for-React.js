@@ -3,24 +3,20 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 10
+      nodejs: 16.20.2
+  pre_build:
     commands:
       - npm install
-      - apt-get update
-      - apt-get install -y awscli
   build:
     commands:
       - npm run build
-      - echo Build completed on `date`
   post_build:
     commands:
       - echo Build completed successfully
       - echo Logging in to Amazon ECR...
-      - aws --version
-      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
-      - echo Tagging Docker image...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - docker build -t my-react-app .
       - docker tag my-react-app:latest public.ecr.aws/j7z6d3z4/my-react-app:latest
-      - echo Pushing Docker image to Amazon ECR...
       - docker push public.ecr.aws/j7z6d3z4/my-react-app:latest
       - echo Docker image pushed successfully
 
