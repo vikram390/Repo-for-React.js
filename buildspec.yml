@@ -1,6 +1,13 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      nodejs: 14
+    commands:
+      - npm install
+      - apt-get update
+      - apt-get install -y awscli
   build:
     commands:
       - npm run build
@@ -12,12 +19,13 @@ phases:
       - aws --version
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
       - echo Tagging Docker image...
-      - docker tag my-react-app:latest public.ecr.aws/j7z6d3z4/my-react-app:latest
+      - docker tag $REPOSITORY_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPOSITORY_NAME:$IMAGE_TAG
       - echo Pushing Docker image to Amazon ECR...
-      - docker push public.ecr.aws/j7z6d3z4/my-react-app:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPOSITORY_NAME:$IMAGE_TAG
       - echo Docker image pushed successfully
 
 artifacts:
   files:
     - '**/*'
+
 
